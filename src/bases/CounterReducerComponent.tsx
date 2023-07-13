@@ -7,9 +7,9 @@ interface CounterState {
 }
 
 const INITIAL_STATE: CounterState = {
-  counter: 10,
-  previous: 20,
-  changes: 30,
+  counter: 0,
+  previous: 0,
+  changes: 0,
 };
 
 // No crece, no extiende y es mas extricto,
@@ -30,9 +30,15 @@ const counterReducer = (
   state: CounterState,
   action: CounterAction
 ): CounterState => {
+  const { counter, changes } = state;
+
   switch (action.type) {
     case "increaseBy":
-      break;
+      return {
+        counter: counter + action.payload.value,
+        previous: counter,
+        changes: changes + 1,
+      };
     case "reset":
       return {
         counter: 0,
@@ -48,18 +54,36 @@ const counterReducer = (
 };
 
 export const CounterReducerComponent = () => {
-  const [{ counter }, dispatch] = useReducer(counterReducer, INITIAL_STATE);
+  const [{ counter, previous, changes }, dispatch] = useReducer(
+    counterReducer,
+    INITIAL_STATE
+  );
 
-  const handleClick = () => {
+  const handleReset = () => {
     dispatch({
       type: "reset",
     });
   };
 
+  const increaseBy = (value: number) => {
+    dispatch({
+      type: "increaseBy",
+      payload: {
+        value,
+      },
+    });
+  };
+
   return (
     <>
-      <h1>CounterReducerComponent: {counter}</h1>
-      <button onClick={handleClick}>reset</button>
+      <h1>CounterReducerComponent: </h1>
+      <h3>Counter: {counter}</h3>
+      <h3>Previo: {previous}</h3>
+      <h3>Cambios: {changes}</h3>
+      <button onClick={() => increaseBy(1)}>+1</button>
+      <button onClick={() => increaseBy(5)}>+5</button>
+      <button onClick={() => increaseBy(10)}>+10</button>
+      <button onClick={handleReset}>reset</button>
     </>
   );
 };
